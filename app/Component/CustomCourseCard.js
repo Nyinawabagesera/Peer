@@ -2,8 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
-const CustomCourseCard = ({ image, title, description, mentorImage, name, mentordescription, navigation}) => {
-
+const CustomCourseCard = ({ image, title, description, mentorImage, name, mentordescription, email, navigation }) => {
   const handlePress = () => {
     navigation.navigate('Knowmore', {
       image,
@@ -11,7 +10,8 @@ const CustomCourseCard = ({ image, title, description, mentorImage, name, mentor
       description,
       mentorImage,
       name,
-      mentordescription
+      mentordescription,
+      email,
     });
   };
 

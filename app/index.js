@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native'; // Import navigation hook
+import { useNavigation } from '@react-navigation/native';
 import {
   SafeAreaView,
   Image,
@@ -59,7 +59,7 @@ const Slide = ({ item }) => {
 const Index = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = React.useState(0);
   const ref = React.useRef();
-  const navigation = useNavigation(); // Use navigation from React Navigation
+  const navigation = useNavigation(); 
 
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
@@ -80,11 +80,11 @@ const Index = () => {
     const lastSlideIndex = slides.length - 1;
     const offset = lastSlideIndex * width;
     ref?.current.scrollToOffset({ offset });
-    setCurrentSlideIndex(lastSlideIndex);
+    setCurrentSlideIndex(lastSlideIndex); 
   };
 
   const handleGetStarted = () => {
-    navigation.navigate('Signup'); // Use navigation to go to Signup screen
+    navigation.navigate('Signup');
   };
 
   const Footer = () => {

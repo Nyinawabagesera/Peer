@@ -1,15 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/Ionicons";
-import HomePage from '../app/HomePage'
+import HomePage from '../app/HomePage';
 import ProfileScreen from "./Profile";
 import SettingsScreen from "./Settings";
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabs() {
-//   const { darkMode } = UseAuth();
-
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -21,13 +19,15 @@ export default function BottomTabs() {
         tabBarInactiveTintColor: "#888",
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          if (route.name === "Home") {
+
+          if (route.name === "HomePage") {
             iconName = focused ? "home" : "home-outline";
           } else if (route.name === "Profile") {
             iconName = focused ? "person" : "person-outline";
           } else if (route.name === "Settings") {
             iconName = focused ? "settings" : "settings-outline";
           }
+
           return <Icon name={iconName} size={size} color={color} />;
         },
       })}

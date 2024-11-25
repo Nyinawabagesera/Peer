@@ -27,7 +27,7 @@ const Login = () => {
       setLoading(true);
       await login(data.email, data.password);
       console.log("User logged in:", data);
-      navigation.navigate("HomePage");
+      navigation.navigate("BottomTabs");
     } catch (error) {
       console.error("Login failed", error);
       alert("Login failed. Please check your credentials.");

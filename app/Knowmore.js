@@ -2,10 +2,8 @@ import React from 'react';
 import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, Linking, Platform, StatusBar } from 'react-native';
 
 const Knowmore = ({ route }) => {
+  // const { darkMode, HandleMode } = useContext(ChangeDarkMode);
   const rout = route.params;
-
-  // Debugging step: Check the passed data
-  console.log('Route Params:', rout);
 
   const handleEmailContact = () => {
     Linking.openURL(`mailto:${rout.email}`);
@@ -25,7 +23,7 @@ const Knowmore = ({ route }) => {
           <Text style={styles.description}>{rout.description || 'Sample Description'}</Text>
         </View>
 
-        <View style={{ height: 100 }}></View>
+        <View style={{ height: 10 }}></View>
 
         <View style={{ flexDirection: 'row', marginLeft: 20, gap: 20 }}>
           <View>

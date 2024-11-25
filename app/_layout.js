@@ -28,8 +28,8 @@ export default function App() {
       <AuthProvider>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false}}>
-          <Stack.Screen name="BottomTabs"component={BottomTabs}/>
           <Stack.Screen name="Index"component={Index}/>
+          <Stack.Screen name="BottomTabs"component={BottomTabs}/>
           <Stack.Screen name="Signup"component={Signup}/>
           <Stack.Screen name="Login"component={Login}/>
           <Stack.Screen name="Knowmore"component={Knowmore}/>

@@ -15,6 +15,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Signup = ({ navigation }) => {
+  const { darkMode, toggleDarkMode } = useAuth(); 
   const {
     register,
     handleSubmit,
@@ -30,7 +31,7 @@ const Signup = ({ navigation }) => {
       setLoading(true);
       await signup(data.email, data.password);
       console.log("User signed up:", data);
-      navigation.navigate("Login"); // Use navigation.navigate instead of router.push
+      navigation.navigate("Login"); 
     } catch (error) {
       console.error("Signup failed", error);
       alert("Signup failed. Please try again.");
@@ -62,14 +63,13 @@ const Signup = ({ navigation }) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
-          <Text style={styles.header}>Sign Up</Text>
+      <ScrollView contentContainerStyle={[styles.scrollContainer, { backgroundColor: darkMode ? "#2A2A2A" : "#FFFFFF" }]}>
+        <View style={[styles.container, { backgroundColor: darkMode ? "#2A2A2A" : "#FFFFFF" }]}>
+          <Text style={[styles.header, { color: darkMode ? "#FFFFFF" : "darkcyan" }]}>Sign Up</Text>
           <View style={styles.formGroup}>
-            {/* Username Field */}
-            <Text style={styles.label}>Username:</Text>
+            <Text style={[styles.label, { color: darkMode ? "#E6E6E6" : "#333" }]}>Username:</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: darkMode ? "#3E3E3E" : "#FFFFFF", color: darkMode ? "#E6E6E6" : "#333" }]}
               placeholder="Enter your username"
               onChangeText={(value) => setValue("username", value)}
             />
@@ -77,10 +77,9 @@ const Signup = ({ navigation }) => {
               <Text style={styles.error}>{errors.username.message}</Text>
             )}
 
-            {/* Email Field */}
-            <Text style={styles.label}>Email:</Text>
+            <Text style={[styles.label, { color: darkMode ? "#E6E6E6" : "#333" }]}>Email:</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: darkMode ? "#3E3E3E" : "#FFFFFF", color: darkMode ? "#E6E6E6" : "#333" }]}
               placeholder="Enter your email"
               keyboardType="email-address"
               onChangeText={(value) => setValue("email", value)}
@@ -89,11 +88,10 @@ const Signup = ({ navigation }) => {
               <Text style={styles.error}>{errors.email.message}</Text>
             )}
 
-            {/* Password Field */}
-            <Text style={styles.label}>Password:</Text>
+            <Text style={[styles.label, { color: darkMode ? "#E6E6E6" : "#333" }]}>Password:</Text>
             <View style={styles.passwordContainer}>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: darkMode ? "#3E3E3E" : "#FFFFFF", color: darkMode ? "#E6E6E6" : "#333" }]}
                 placeholder="Enter your password"
                 secureTextEntry={!showPassword}
                 onChangeText={(value) => setValue("password", value)}
@@ -105,7 +103,7 @@ const Signup = ({ navigation }) => {
                 <Icon
                   name={showPassword ? "eye-off" : "eye"}
                   size={24}
-                  color="black"
+                  color={darkMode ? "#E6E6E6" : "#333"}
                 />
               </TouchableOpacity>
             </View>
@@ -113,9 +111,8 @@ const Signup = ({ navigation }) => {
               <Text style={styles.error}>{errors.password.message}</Text>
             )}
 
-            {/* Submit Button */}
             <TouchableOpacity
-              style={[styles.button, loading && styles.buttonDisabled]}
+              style={[styles.button, loading && styles.buttonDisabled, { backgroundColor: darkMode ? "#9532AA" : "#9633AA" }]}
               onPress={handleSubmit(onSubmit)}
               disabled={loading}
             >
@@ -132,11 +129,10 @@ const Signup = ({ navigation }) => {
             )}
           </View>
 
-          {/* Redirect to Login */}
           <View style={styles.login}>
-            <Text>Already have an account?</Text>
+            <Text style={{ color: darkMode ? "#E6E6E6" : "#333" }}>Already have an account?</Text>
             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-              <Text style={styles.loginLink}>Log In</Text>
+              <Text style={[styles.loginLink, { color: darkMode ? "lightblue" : "green" }]}>Log In</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -154,12 +150,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: "center",
-    backgroundColor: "white",
   },
   header: {
     textAlign: "center",
     fontWeight: "bold",
-    color: "darkcyan",
     fontSize: 24,
     marginBottom: 20,
   },
@@ -193,7 +187,6 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 20,
     padding: 15,
-    backgroundColor: '#9633AA',
     borderRadius: 5,
   },
   buttonDisabled: {
@@ -212,7 +205,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loginLink: {
-    color: "green",
     marginTop: 5,
   },
 });

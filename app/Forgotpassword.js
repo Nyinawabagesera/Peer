@@ -3,14 +3,14 @@ import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from './contexts/AuthContext';
 
-export default function Forgotpassword() {
+export default function ForgotPassword() {
   const initialValues = { email: "" };
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
   const [message, setMessage] = useState(null);
 
-  const { resetPassword} = useAuth();
+  const { resetPassword, darkMode } = useAuth();
   const navigation = useNavigation();
 
   const handleChange = (name, value) => {
@@ -51,22 +51,43 @@ export default function Forgotpassword() {
   };
 
   return (
-    <View style={[styles.container]}>
-      <Text style={styles.heading}>Reset Password</Text>
-      {message && <Text style={styles.successMessage}>{message}</Text>}
+    <View style={[styles.container, { backgroundColor: darkMode ? "#2A2A2A" : "#FFFFFF" }]}>
+      <Text style={[styles.heading, { color: darkMode ? "#FFFFFF" : "green" }]}>
+        Reset Password
+      </Text>
+
+      {message && <Text style={[styles.successMessage, { color: darkMode ? "lightgreen" : "green" }]}>{message}</Text>}
 
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            backgroundColor: darkMode ? "#3E3E3E" : "#FFFFFF",
+            color: darkMode ? "#E6E6E6" : "#333",
+            borderColor: darkMode ? "#444" : "gray",
+          },
+        ]}
         placeholder="Enter email"
+        placeholderTextColor={darkMode ? "#AAAAAA" : "#888"}
         value={formValues.email}
         onChangeText={(value) => handleChange("email", value)}
         keyboardType="email-address"
       />
       {formErrors.email && <Text style={styles.error}>{formErrors.email}</Text>}
 
-      <Button title="Reset Password" color={'#9633AA'}  onPress={handleSubmit} />
+      <Button
+        title="Reset Password"
+        color={darkMode ? "#9532AA" : "#9633AA"}
+        onPress={handleSubmit}
+      />
 
-      <Text style={styles.link} onPress={() => navigation.navigate("Login")}>
+      <Text
+        style={[
+          styles.link,
+          { color: darkMode ? "lightblue" : "green" },
+        ]}
+        onPress={() => navigation.navigate("Login")}
+      >
         Go back to Login
       </Text>
     </View>
@@ -79,24 +100,19 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: "center",
   },
-  light: {
-    backgroundColor: "#fff",
-  },
   heading: {
     fontSize: 24,
     textAlign: "center",
     marginBottom: 40,
-    color:'green',
   },
   input: {
     height: 40,
-    borderColor: "gray",
     borderWidth: 1,
     marginBottom: 10,
     paddingLeft: 8,
+    borderRadius: 5,
   },
   successMessage: {
-    color: "green",
     textAlign: "center",
     marginBottom: 10,
   },
@@ -105,9 +121,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   link: {
-    color: "green",
     textAlign: "center",
     marginTop: 20,
-    fontSize:20,
+    fontSize: 20,
   },
 });

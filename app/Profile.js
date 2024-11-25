@@ -1,177 +1,153 @@
-import React, { useState } from "react";
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  Button, 
-  StyleSheet, 
-  Image, 
-  TouchableOpacity, 
-  ActivityIndicator, 
-  Alert 
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
 } from "react-native";
-import { useAuth } from "./contexts/AuthContext"; // Ensure AuthContext is correctly set up
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system"; 
 
-export default function ProfileScreen({ navigation }) {
-  const { currentUser, logout } = useAuth(); // Assuming `currentUser` contains user data
-  const [profileData, setProfileData] = useState({
-    name: currentUser?.name || "",
-    email: currentUser?.email || "",
-    photoURL: currentUser?.photoURL || "https://via.placeholder.com/150",
-  });
-  const [loading, setLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+const ProfileScreen = () => {
+  const [profilePicture, setProfilePicture] = useState(null);
 
-  // Handle Save Changes
-  const handleSaveChanges = () => {
-    // Logic to save profile changes to Firestore or backend
-    console.log("Profile data saved:", profileData);
-    setIsEditing(false); // Exit edit mode
-    Alert.alert("Profile Updated", "Your profile has been updated successfully.");
-  };
-
-  // Handle Logout
-  const handleLogout = async () => {
-    setLoading(true);
-    try {
-      await logout(); // Call the logout function from AuthContext
-      navigation.navigate("Login"); // Redirect to Login screen
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
-    setLoading(false);
-  };
-
-  // Handle Profile Picture Upload
-  const handleChoosePhoto = async () => {
+  const displayName = "Jacky";  
+  const email = "jacky@gmail.com";  
+  const course = "Software Engineering";
+  const skills = "JavaScript, React Native, Firebase";
+  const passion = "Building tech solutions for social good";
+  const handlePickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
-      Alert.alert("Permission Denied", "We need access to your photos to update your profile picture.");
+      Alert.alert("Permission Denied", "You need to allow access to your gallery.");
       return;
     }
 
-    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
       allowsEditing: true,
+      quality: 0.5,
     });
 
-    if (!pickerResult.canceled) {
-      setProfileData({ ...profileData, photoURL: pickerResult.assets[0].uri });
+    if (!result.cancelled) {
+      const imageUri = result.uri;
+      setProfilePicture(imageUri);
+      await FileSystem.writeAsStringAsync(
+        FileSystem.documentDirectory + "profilePic.txt",
+        imageUri || ""
+      );
     }
   };
+
+
+  useEffect(() => {
+    const fetchProfilePic = async () => {
+      const storedProfilePic = await FileSystem.readAsStringAsync(
+        FileSystem.documentDirectory + "profilePic.txt"
+      ).catch(() => null);
+
+      if (storedProfilePic) {
+        setProfilePicture(storedProfilePic);
+      }
+    };
+
+    fetchProfilePic();
+  }, []);
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Profile</Text>
 
-      {/* Profile Picture */}
-      <View style={styles.profilePictureContainer}>
+      <TouchableOpacity onPress={handlePickImage}>
         <Image
-          source={{ uri: profileData.photoURL }}
+          source={
+            profilePicture
+              ? { uri: profilePicture }
+              : { uri: "https://via.placeholder.com/150" }
+          }
           style={styles.profilePicture}
         />
-        {isEditing && (
-          <TouchableOpacity onPress={handleChoosePhoto}>
-            <Text style={styles.changePhoto}>Change Photo</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      </TouchableOpacity>
+      <Text style={styles.changePicText}>Tap to change profile picture</Text>
 
-      {/* Profile Information */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Name</Text>
-        {isEditing ? (
-          <TextInput
-            style={styles.input}
-            placeholder="Name"
-            value={profileData.name}
-            onChangeText={(text) => setProfileData({ ...profileData, name: text })}
-          />
-        ) : (
-          <Text style={styles.text}>{profileData.name}</Text>
-        )}
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.label}>Email</Text>
-        <Text style={styles.text}>{profileData.email}</Text>
-      </View>
+      <Text style={styles.label}>Name</Text>
+      <Text style={styles.info}>{displayName}</Text>
 
-      {/* Action Buttons */}
-      {isEditing ? (
-        <View style={styles.buttonContainer}>
-          <Button title="Save Changes" onPress={handleSaveChanges} />
-          <Button title="Cancel" color="red" onPress={() => setIsEditing(false)} />
-        </View>
-      ) : (
-        <Button title="Edit Profile" onPress={() => setIsEditing(true)} />
-      )}
+      <Text style={styles.label}>Email</Text>
+      <Text style={styles.info}>{email}</Text>
 
-      {/* Logout Button */}
-      <View style={styles.logoutContainer}>
-        <Button
-          title={loading ? "Logging Out..." : "Logout"}
-          onPress={handleLogout}
-          disabled={loading}
-        />
-        {loading && <ActivityIndicator size="small" color="darkcyan" style={{ marginTop: 10 }} />}
-      </View>
+      <Text style={styles.label}>Course</Text>
+      <Text style={styles.info}>{course}</Text>
+
+      <Text style={styles.label}>Skills</Text>
+      <Text style={styles.info}>{skills}</Text>
+
+
+      <Text style={styles.label}>Passion</Text>
+      <Text style={styles.info}>{passion}</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "#fff",
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  profilePictureContainer: {
+    padding: 20,
+    backgroundColor: "#f9f9f9",
     alignItems: "center",
-    marginBottom: 20,
-  },
-  profilePicture: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-  },
-  changePhoto: {
-    color: "blue",
-    textDecorationLine: "underline",
-  },
-  section: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  text: {
-    fontSize: 16,
-    color: "#555",
-  },
-  input: {
-    height: 40,
-    borderColor: "#ddd",
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  logoutContainer: {
+    justifyContent: "flex-start",
     marginTop: 20,
   },
+  header: {
+    fontSize: 30,
+    fontWeight: "700",
+    marginBottom: 25,
+    color: "#2c3e50",
+    textAlign: "center",
+    textTransform: "uppercase",
+  },
+  label: {
+    fontSize: 18,
+    marginBottom: 8,
+    textAlign: "left",
+    fontWeight: "600",
+    color: "#34495e",
+  },
+  info: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: "left",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ecf0f1",
+    shadowColor: "#bdc3c7",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
+    width: "90%",
+  },
+  profilePicture: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    borderWidth: 4,
+    borderColor: "#3498db",
+    marginBottom: 15,
+    alignSelf: "center",
+  },
+  changePicText: {
+    color: "#3498db",
+    fontSize: 14,
+    marginBottom: 25,
+    fontStyle: "italic",
+    textAlign: "center",
+  },
 });
+
+export default ProfileScreen;

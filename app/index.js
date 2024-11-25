@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from './contexts/AuthContext';
 import {
   SafeAreaView,
   Image,
@@ -15,7 +16,15 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const { width, height } = Dimensions.get('window');
 
-const COLORS = { primary: '#282534', white: '#fff' };
+const COLORS = {
+  primary: '#282534',
+  white: '#fff',
+  darkPrimary: '#fff',
+  darkBackground: '#121212',
+  darkButton: '#9633AA',
+  darkText: '#fff',
+  lightText: '#000',
+};
 
 const slides = [
   {
@@ -23,25 +32,25 @@ const slides = [
     image: require('../assets/student.jpg'),
     title: 'Welcome to the world of career opportunities',
     subtitle:
-      'Here we empower you to choose the right career path by providing assessments, guidance, and resources',
+      'Empowering you with resources, guidance, and collaboration to excel in your learning journey.',
   },
   {
     id: '2',
     image: require('../assets/passion.jpg'),
     title: 'Uncover your passion',
     subtitle:
-      'Uncover your passion and pursue your dreams through our guidance that is designed to help you understand your interests, strength, and skills.',
+      'Discover your strengths and enhance your skills with resources and guidance designed for your success',
   },
   {
-    id: '3',
+      id: '3',
     image: require('../assets/guidance.jpg'),
     title: 'Get assistance from advisors',
     subtitle:
-      'Our team of experienced advisors will provide you with personalized guidance and support to help you find the perfect career path.',
+      'Connect with mentors and peers for personalized guidance and support to enhance your learning journey.',
   },
 ];
 
-const Slide = ({ item }) => {
+const Slide = ({ item, darkMode }) => {
   return (
     <View style={{ alignItems: 'center', width }}>
       <Image
@@ -49,17 +58,32 @@ const Slide = ({ item }) => {
         style={{ height: '60%', width: '90%', resizeMode: 'contain' }}
       />
       <View>
-        <Text style={styles.title}>{item?.title}</Text>
-        <Text style={styles.subtitle}>{item?.subtitle}</Text>
+        <Text
+          style={[
+            styles.title,
+            { color: darkMode ? COLORS.darkText : COLORS.primary },
+          ]}
+        >
+          {item?.title}
+        </Text>
+        <Text
+          style={[
+            styles.subtitle,
+            { color: darkMode ? COLORS.darkText : COLORS.primary },
+          ]}
+        >
+          {item?.subtitle}
+        </Text>
       </View>
     </View>
   );
 };
 
 const Index = () => {
+  const { darkMode } = useAuth();
   const [currentSlideIndex, setCurrentSlideIndex] = React.useState(0);
   const ref = React.useRef();
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
 
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
@@ -80,7 +104,7 @@ const Index = () => {
     const lastSlideIndex = slides.length - 1;
     const offset = lastSlideIndex * width;
     ref?.current.scrollToOffset({ offset });
-    setCurrentSlideIndex(lastSlideIndex); 
+    setCurrentSlideIndex(lastSlideIndex);
   };
 
   const handleGetStarted = () => {
@@ -89,7 +113,12 @@ const Index = () => {
 
   const Footer = () => {
     return (
-      <View style={styles.footerContainer}>
+      <View
+        style={[
+          styles.footerContainer,
+          { backgroundColor: darkMode ? COLORS.darkBackground : COLORS.white },
+        ]}
+      >
         <View style={styles.indicatorContainer}>
           {slides.map((_, index) => (
             <View
@@ -108,21 +137,42 @@ const Index = () => {
 
         <View style={{ marginBottom: 20 }}>
           {currentSlideIndex === slides.length - 1 ? (
-            <TouchableOpacity style={styles.btn} onPress={handleGetStarted}>
+            <TouchableOpacity
+              style={[
+                styles.btn,
+                { backgroundColor: darkMode ? COLORS.darkButton : '#9633AA' },
+              ]}
+              onPress={handleGetStarted}
+            >
               <Text style={styles.btnText}>GET STARTED</Text>
             </TouchableOpacity>
           ) : (
             <View style={styles.navigationButtons}>
               <TouchableOpacity
                 activeOpacity={0.8}
-                style={styles.secondaryBtn}
-                onPress={skip}>
-                <Text style={styles.skipText}>SKIP</Text>
+                style={[
+                  styles.secondaryBtn,
+                  { borderColor: darkMode ? COLORS.darkButton : '#9633AA' },
+                ]}
+                onPress={skip}
+              >
+                <Text
+                  style={[
+                    styles.skipText,
+                    { color: darkMode ? COLORS.darkButton : '#9633AA' },
+                  ]}
+                >
+                  SKIP
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={goToNextSlide}
-                style={styles.primaryBtn}>
+                style={[
+                  styles.primaryBtn,
+                  { backgroundColor: darkMode ? COLORS.darkButton : '#9633AA' },
+                ]}
+              >
                 <View style={styles.nextButtonContent}>
                   <Text style={styles.btnText}>NEXT</Text>
                   <AntDesign name="right" size={18} color="white" />
@@ -136,7 +186,12 @@ const Index = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: darkMode ? COLORS.darkBackground : COLORS.white,
+      }}
+    >
       <StatusBar />
       <FlatList
         ref={ref}
@@ -146,7 +201,7 @@ const Index = () => {
         horizontal
         data={slides}
         pagingEnabled
-        renderItem={({ item }) => <Slide item={item} />}
+        renderItem={({ item }) => <Slide item={item} darkMode={darkMode} />}
       />
       <Footer />
     </SafeAreaView>
@@ -155,7 +210,6 @@ const Index = () => {
 
 const styles = StyleSheet.create({
   subtitle: {
-    color: COLORS.primary,
     fontSize: 17,
     marginTop: 10,
     maxWidth: '70%',
@@ -163,7 +217,6 @@ const styles = StyleSheet.create({
     lineHeight: 23,
   },
   title: {
-    color: COLORS.primary,
     fontSize: 29,
     marginTop: 20,
     marginLeft: 20,
@@ -179,7 +232,6 @@ const styles = StyleSheet.create({
   btn: {
     height: 50,
     borderRadius: 5,
-    backgroundColor: '#9633AA',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -187,7 +239,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     borderRadius: 5,
-    backgroundColor: '#9633AA',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
@@ -218,7 +269,6 @@ const styles = StyleSheet.create({
   skipText: {
     fontWeight: 'bold',
     fontSize: 15,
-    color: '#9633AA',
   },
   navigationButtons: {
     flexDirection: 'row',

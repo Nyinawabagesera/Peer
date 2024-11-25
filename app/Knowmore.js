@@ -2,7 +2,6 @@ import React from 'react';
 import { ScrollView, View, Text, Image, StyleSheet, TouchableOpacity, Linking, Platform, StatusBar } from 'react-native';
 
 const Knowmore = ({ route }) => {
-  // const { darkMode, HandleMode } = useContext(ChangeDarkMode);
   const rout = route.params;
 
   const handleEmailContact = () => {
@@ -11,7 +10,6 @@ const Knowmore = ({ route }) => {
 
   return (
     <>
-      {/* Adjusting status bar height */}
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <ScrollView style={{ flex: 1, paddingTop: Platform.OS === 'ios' ? 30 : 0 }}>
         <View style={styles.container}>
@@ -59,7 +57,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 20,
-    backgroundColor: 'lightgray'  // Temporary background for debugging
+    backgroundColor: 'lightgray'
   },
   image: {
     width: '100%',

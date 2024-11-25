@@ -6,7 +6,6 @@ const resources = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const resourcesData = [
-    // JavaScript Resources
     {
       id: 1,
       title: "JavaScript Basics",
@@ -32,7 +31,6 @@ const resources = ({ navigation }) => {
       ]
     },
 
-    // React Resources
     {
       id: 3,
       title: "React - Official Docs",
@@ -58,7 +56,6 @@ const resources = ({ navigation }) => {
       ]
     },
 
-    // HTML/CSS Resources
     {
       id: 5,
       title: "HTML Basics",
@@ -84,7 +81,6 @@ const resources = ({ navigation }) => {
       ]
     },
 
-    // Node.js Resources
     {
       id: 7,
       title: "Node.js Documentation",
@@ -110,7 +106,6 @@ const resources = ({ navigation }) => {
       ]
     },
 
-    // Git/GitHub Resources
     {
       id: 9,
       title: "Git and GitHub - Official Docs",
@@ -124,7 +119,6 @@ const resources = ({ navigation }) => {
       ]
     },
 
-    // Python Resources
     {
       id: 10,
       title: "Python for Beginners",
@@ -138,7 +132,6 @@ const resources = ({ navigation }) => {
       ]
     },
 
-    // SQL Resources
     {
       id: 11,
       title: "SQL Basics",
@@ -152,7 +145,6 @@ const resources = ({ navigation }) => {
       ]
     },
 
-    // Machine Learning Resources
     {
       id: 12,
       title: "Introduction to Machine Learning",
@@ -167,7 +159,6 @@ const resources = ({ navigation }) => {
     },
   ];
 
-  // Filter resources based on search query
   const filteredResources = resourcesData.filter(resource =>
     resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     resource.description.toLowerCase().includes(searchQuery.toLowerCase()) ||

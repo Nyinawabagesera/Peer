@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from "./contexts/AuthContext";
 import {
   View,
   Text,
@@ -13,6 +14,7 @@ import { FIREBASE_DB } from "./firebase";
 import { Ionicons } from "@expo/vector-icons";
 
 const Groups = ({ navigation }) => {
+  const { darkMode } = useAuth();
   const [groups, setGroups] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -44,19 +46,19 @@ const Groups = ({ navigation }) => {
 
   return (
     <>
-      <StatusBar barStyle="dark-content" backgroundColor="#f1f1f1" />
-      <ScrollView style={styles.mainContainer}>
-        <View style={styles.searchContainer}>
+      <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} backgroundColor={darkMode ? "#1c1c1c" : "#f1f1f1"} />
+      <ScrollView style={[styles.mainContainer, { backgroundColor: darkMode ? "#121212" : "#f1f1f1" }]}>
+        <View style={[styles.searchContainer, { backgroundColor: darkMode ? "#333" : "#fff" }]}>
           <Ionicons
             name="search"
             size={20}
-            color="#888"
+            color={darkMode ? "#bbb" : "#888"}
             style={styles.searchIcon}
           />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: darkMode ? "#fff" : "#333" }]}
             placeholder="Search for groups"
-            placeholderTextColor="#bbb"
+            placeholderTextColor={darkMode ? "#bbb" : "#bbb"}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -65,22 +67,16 @@ const Groups = ({ navigation }) => {
         <View style={styles.groupListContainer}>
           {filteredGroups.length > 0 ? (
             filteredGroups.map((group) => (
-              <View key={group.id} style={styles.groupItem}>
-                <Text style={styles.groupName}>{group.name}</Text>
-                <Text style={styles.groupSubject}>
+              <View key={group.id} style={[styles.groupItem, { backgroundColor: darkMode ? "#333" : "#fff" }]}>
+                <Text style={[styles.groupName, { color: darkMode ? "#fff" : "#333" }]}>{group.name}</Text>
+                <Text style={[styles.groupSubject, { color: darkMode ? "#bbb" : "#555" }]}>
                   Subject: {group.subject}
                 </Text>
-                {/* <Text style={styles.groupMembers}>
-                  Members: {group.members}
-                </Text> */}
-                {/* <Text style={styles.groupStatus}>
-                  Status: {group.isOpen ? "Open" : "Closed"}
-                </Text> */}
                 <TouchableOpacity
-                  style={styles.joinButton}
+                  style={[styles.joinButton, { backgroundColor: darkMode ? "#9532AA" : "#9532AA" }]}
                   onPress={() =>
                     navigation.navigate("GroupDetails", {
-                      groupId:group.groupId,
+                      groupId: group.groupId,
                       name: group.name,
                       subject: group.subject,
                       members: group.members,
@@ -93,7 +89,7 @@ const Groups = ({ navigation }) => {
               </View>
             ))
           ) : (
-            <Text style={styles.noResultsText}>No groups found</Text>
+            <Text style={[styles.noResultsText, { color: darkMode ? "#bbb" : "#999" }]}>No groups found</Text>
           )}
         </View>
       </ScrollView>
@@ -104,7 +100,6 @@ const Groups = ({ navigation }) => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#f1f1f1",
     paddingTop: 40,
   },
   searchContainer: {
@@ -112,7 +107,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 20,
     marginBottom: 20,
-    backgroundColor: "#fff",
     borderRadius: 25,
     paddingHorizontal: 15,
     paddingVertical: 10,
@@ -126,7 +120,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     fontSize: 16,
-    color: "#333",
     paddingLeft: 10,
   },
   searchIcon: {
@@ -136,7 +129,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   groupItem: {
-    backgroundColor: "#fff",
     padding: 15,
     marginBottom: 15,
     borderRadius: 8,
@@ -153,7 +145,6 @@ const styles = StyleSheet.create({
   },
   groupSubject: {
     fontSize: 16,
-    color: "#555",
     marginBottom: 5,
   },
   groupMembers: {
@@ -167,7 +158,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   joinButton: {
-    backgroundColor: "#9532AA",
     paddingVertical: 10,
     borderRadius: 5,
     alignItems: "center",
@@ -180,7 +170,6 @@ const styles = StyleSheet.create({
   noResultsText: {
     textAlign: "center",
     fontSize: 16,
-    color: "#999",
     marginTop: 20,
   },
 });

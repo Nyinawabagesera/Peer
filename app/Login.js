@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "./contexts/AuthContext";
 import {
   View,
@@ -15,11 +14,16 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const Login = () => {
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
+const Login = ({ navigation }) => {
+  const { darkMode, toggleDarkMode } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const navigation = useNavigation();
   const { login } = useAuth();
 
   const onSubmit = async (data) => {
@@ -30,7 +34,7 @@ const Login = () => {
       navigation.navigate("BottomTabs");
     } catch (error) {
       console.error("Login failed", error);
-      alert("Login failed. Please check your credentials.");
+      alert("Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -58,25 +62,26 @@ const Login = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
-          <Text style={styles.header}>Log In</Text>
+      <ScrollView contentContainerStyle={[styles.scrollContainer, { backgroundColor: darkMode ? "#2A2A2A" : "#FFFFFF" }]}>
+        <View style={[styles.container, { backgroundColor: darkMode ? "#2A2A2A" : "#FFFFFF" }]}>
+          <Text style={[styles.header, { color: darkMode ? "#FFFFFF" : "darkcyan" }]}>Log In</Text>
           <View style={styles.formGroup}>
             {/* Email Field */}
-            <Text style={styles.label}>Email:</Text>
+            <Text style={[styles.label, { color: darkMode ? "#E6E6E6" : "#333" }]}>Email:</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: darkMode ? "#3E3E3E" : "#FFFFFF", color: darkMode ? "#E6E6E6" : "#333" }]}
               placeholder="Enter your email"
               keyboardType="email-address"
               onChangeText={(value) => setValue("email", value)}
             />
-            {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
+            {errors.email && (
+              <Text style={styles.error}>{errors.email.message}</Text>
+            )}
 
-            {/* Password Field */}
-            <Text style={styles.label}>Password:</Text>
+            <Text style={[styles.label, { color: darkMode ? "#E6E6E6" : "#333" }]}>Password:</Text>
             <View style={styles.passwordContainer}>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: darkMode ? "#3E3E3E" : "#FFFFFF", color: darkMode ? "#E6E6E6" : "#333" }]}
                 placeholder="Enter your password"
                 secureTextEntry={!showPassword}
                 onChangeText={(value) => setValue("password", value)}
@@ -85,14 +90,19 @@ const Login = () => {
                 style={styles.eyeIcon}
                 onPress={() => setShowPassword(!showPassword)}
               >
-                <Icon name={showPassword ? "eye-off" : "eye"} size={24} color="black" />
+                <Icon
+                  name={showPassword ? "eye-off" : "eye"}
+                  size={24}
+                  color={darkMode ? "#E6E6E6" : "#333"}
+                />
               </TouchableOpacity>
             </View>
-            {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}
+            {errors.password && (
+              <Text style={styles.error}>{errors.password.message}</Text>
+            )}
 
-            {/* Submit Button */}
             <TouchableOpacity
-              style={[styles.button, loading && styles.buttonDisabled]}
+              style={[styles.button, loading && styles.buttonDisabled, { backgroundColor: darkMode ? "#9532AA" : "#9633AA" }]}
               onPress={handleSubmit(onSubmit)}
               disabled={loading}
             >
@@ -100,17 +110,25 @@ const Login = () => {
                 {loading ? "Logging In..." : "Log In"}
               </Text>
             </TouchableOpacity>
-            {loading && <ActivityIndicator size="small" color="#0000ff" style={styles.spinner} />}
+            {loading && (
+              <ActivityIndicator
+                size="small"
+                color="#0000ff"
+                style={styles.spinner}
+              />
+            )}
           </View>
 
-          {/* Forgot Password and Redirect to Signup */}
           <View style={styles.signup}>
-            <Text>Don't have an account?</Text>
+            <Text style={{ color: darkMode ? "#E6E6E6" : "#333" }}>Don't have an account?</Text>
             <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-              <Text style={styles.signupLink}>Sign Up</Text>
+              <Text style={[styles.signupLink, { color: darkMode ? "lightblue" : "green" }]}>Sign Up</Text>
             </TouchableOpacity>
+          </View>
+
+          <View style={styles.forgotPassword}>
             <TouchableOpacity onPress={() => navigation.navigate("Forgotpassword")}>
-              <Text style={styles.forgotPassword}>Forgot Password?</Text>
+              <Text style={[styles.forgotPasswordLink, { color: darkMode ? "lightblue" : "green" }]}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -128,12 +146,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: "center",
-    backgroundColor: "white",
   },
   header: {
     textAlign: "center",
     fontWeight: "bold",
-    color: "darkcyan",
     fontSize: 24,
     marginBottom: 20,
   },
@@ -167,11 +183,10 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 20,
     padding: 15,
-    backgroundColor: "#9633AA",
     borderRadius: 5,
   },
   buttonDisabled: {
-    backgroundColor: "#9633AA",
+    backgroundColor: '#9633AA',
   },
   buttonText: {
     color: "white",
@@ -186,12 +201,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   signupLink: {
-    color: "green",
     marginTop: 5,
   },
   forgotPassword: {
-    color: 'green',
-    marginTop: 10,
+    marginTop: 20,
+    alignItems: "center",
+  },
+  forgotPasswordLink: {
+    marginTop: 5,
+    textDecorationLine: "underline",
   },
 });
 

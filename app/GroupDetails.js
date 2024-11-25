@@ -31,13 +31,11 @@ import { useAuth } from "./contexts/AuthContext";
 export default function GroupDetails({ route }) {
   const groupId = route?.params?.groupId || " ";
   const groupName = route?.params?.groupName || " ";
-
   const [members, setMembers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
-  const { currentUser } = useAuth();
+  const { currentUser, darkMode } = useAuth();
 
-  // Fetch group members
   useEffect(() => {
     const fetchGroupMembers = async () => {
       try {
@@ -56,7 +54,6 @@ export default function GroupDetails({ route }) {
     fetchGroupMembers();
   }, [groupId]);
 
-  // Listen for real-time updates to messages
   useEffect(() => {
     const messagesCollection = query(
       collection(FIREBASE_DB, "messages", groupId, "chat"),
@@ -65,7 +62,7 @@ export default function GroupDetails({ route }) {
 
     const unsubscribe = onSnapshot(messagesCollection, (snapshot) => {
       const messagesList = snapshot.docs.map((doc) => ({
-        id: doc.id, // Include the document ID
+        id: doc.id,
         ...doc.data(),
       }));
       setMessages(messagesList);
@@ -74,7 +71,6 @@ export default function GroupDetails({ route }) {
     return () => unsubscribe();
   }, [groupId]);
 
-  // Function to send a message
   const sendMessage = async () => {
     if (message.trim() === "") return;
 
@@ -89,13 +85,12 @@ export default function GroupDetails({ route }) {
         message,
         timestamp: Timestamp.now(),
       });
-      setMessage(""); // Reset message input after sending
+      setMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
-  // Function to delete a message
   const deleteMessage = async (messageId) => {
     try {
       const messageDocRef = doc(FIREBASE_DB, "messages", groupId, "chat", messageId);
@@ -106,7 +101,6 @@ export default function GroupDetails({ route }) {
     }
   };
 
-  // Confirm deletion dialog
   const confirmDelete = (messageId, senderId) => {
     if (senderId !== currentUser.email) {
       Alert.alert("Permission Denied", "You can only delete your own messages.");
@@ -123,14 +117,16 @@ export default function GroupDetails({ route }) {
     );
   };
 
+  const dynamicStyles = styles(darkMode);
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          <Text style={styles.title}>{groupName}</Text>
+        <View style={dynamicStyles.container}>
+          <Text style={dynamicStyles.title}>{groupName}</Text>
 
           <FlatList
             data={messages}
@@ -138,58 +134,57 @@ export default function GroupDetails({ route }) {
             renderItem={({ item }) => (
               <View
                 style={[
-                  styles.messageContainer,
+                  dynamicStyles.messageContainer,
                   item.senderId === currentUser.email
-                    ? styles.userMessage
-                    : styles.otherMessage,
+                    ? dynamicStyles.userMessage
+                    : dynamicStyles.otherMessage,
                 ]}
               >
-                <View style={styles.avatarContainer}>
-                  {/* Display Avatar */}
+                <View style={dynamicStyles.avatarContainer}>
                   <Image
                     source={{ uri: `https://www.avatarapi.com/${item.senderId}` }}
-                    style={styles.avatar}
+                    style={dynamicStyles.avatar}
                   />
                 </View>
-                <View style={styles.messageContent}>
+                <View style={dynamicStyles.messageContent}>
                   <Text
                     style={[
-                      styles.senderText,
+                      dynamicStyles.senderText,
                       item.senderId === currentUser.email
-                        ? styles.userSender
-                        : styles.otherSender,
+                        ? dynamicStyles.userSender
+                        : dynamicStyles.otherSender,
                     ]}
                   >
                     {item.senderId === currentUser.email ? "You" : item.senderId}
                   </Text>
-                  <Text style={styles.messageText}>{item.message}</Text>
+                  <Text style={dynamicStyles.messageText}>{item.message}</Text>
                 </View>
-                <Text style={styles.timestampText}>
+                <Text style={dynamicStyles.timestampText}>
                   {new Date(item.timestamp?.seconds * 1000).toLocaleTimeString()}
                 </Text>
 
-                {/* Delete Button */}
                 {item.senderId === currentUser.email && (
                   <TouchableOpacity
-                    style={styles.deleteButton}
+                    style={dynamicStyles.deleteButton}
                     onPress={() => confirmDelete(item.id, item.senderId)}
                   >
-                    <Text style={styles.deleteButtonText}>Delete</Text>
+                    <Text style={dynamicStyles.deleteButtonText}>Delete</Text>
                   </TouchableOpacity>
                 )}
               </View>
             )}
           />
 
-          <View style={styles.inputContainer}>
+          <View style={dynamicStyles.inputContainer}>
             <TextInput
               value={message}
               onChangeText={setMessage}
-              style={styles.input}
+              style={dynamicStyles.input}
               placeholder="Type a message"
+              placeholderTextColor={darkMode ? "#ccc" : "#555"}
             />
-            <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-              <Text style={styles.sendButtonText}>Send</Text>
+            <TouchableOpacity style={dynamicStyles.sendButton} onPress={sendMessage}>
+              <Text style={dynamicStyles.sendButtonText}>Send</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -198,108 +193,100 @@ export default function GroupDetails({ route }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#f5f5f5",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 16,
-    color: "#1E90FF",
-    textAlign: "center",
-  },
-  messageContainer: {
-    marginBottom: 10,
-    padding: 12,
-    borderRadius: 8,
-    maxWidth: "70%",
-    flexDirection: "row", // Make sure it's row to align message content and delete button
-    position: "relative",
-  },
-  userMessage: {
-    alignSelf: "flex-end",
-    backgroundColor: "#DCF8C6", // Light green for user messages
-  },
-  otherMessage: {
-    alignSelf: "flex-start",
-    backgroundColor: "#ffffff", // White for others' messages
-  },
-  senderText: {
-    fontWeight: "bold",
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  userSender: {
-    color: "#075E54", // Dark green for user
-  },
-  otherSender: {
-    color: "#333", // Dark gray for others
-  },
-  messageText: {
-    fontSize: 14,
-    color: "#555",
-  },
-  timestampText: {
-    fontSize: 12,
-    color: "#aaa",
-    position: "absolute", // Position timestamp at top-right
-    top: 0,
-    right: 10,
-  },
-  avatarContainer: {
-    marginRight: 10,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-  },
-  messageContent: {
-    flex: 1,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 16,
-    marginBottom: 16,
-    padding: 8,
-    backgroundColor: "#ffffff",
-    borderRadius: 8,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    marginRight: 8,
-    paddingLeft: 12,
-    borderRadius: 5,
-  },
-  sendButton: {
-    backgroundColor: "#9532AA", 
-    borderRadius: 5,
-    padding: 8,
-  },
-  sendButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  deleteButton: {
-    position: "absolute",
-    bottom: 10,
-    right: 10,
-    backgroundColor: "#9532AA", // Updated color
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-  deleteButtonText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-});
+const styles = (darkMode) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 16,
+      backgroundColor: darkMode ? "#121212" : "#f5f5f5",
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: "bold",
+      marginBottom: 16,
+      color: darkMode ? "#BB86FC" : "#1E90FF",
+      textAlign: "center",
+    },
+    messageContainer: {
+      marginBottom: 10,
+      padding: 12,
+      borderRadius: 8,
+      maxWidth: "70%",
+      flexDirection: "row",
+      position: "relative",
+    },
+    userMessage: {
+      alignSelf: "flex-end",
+      backgroundColor: darkMode ? "#3700B3" : "#DCF8C6",
+    },
+    otherMessage: {
+      alignSelf: "flex-start",
+      backgroundColor: darkMode ? "#1F1B24" : "#ffffff",
+    },
+    senderText: {
+      fontWeight: "bold",
+      fontSize: 14,
+      marginBottom: 4,
+      color: darkMode ? "#BB86FC" : "#333",
+    },
+    messageText: {
+      fontSize: 14,
+      color: darkMode ? "#EDEDED" : "#555",
+    },
+    timestampText: {
+      fontSize: 12,
+      color: darkMode ? "#888" : "#aaa",
+      position: "absolute",
+      top: 0,
+      right: 10,
+    },
+    avatarContainer: {
+      marginRight: 10,
+    },
+    avatar: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+    },
+    messageContent: {
+      flex: 1,
+    },
+    inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: 16,
+      marginBottom: 16,
+      padding: 8,
+      backgroundColor: darkMode ? "#1F1B24" : "#ffffff",
+      borderRadius: 8,
+    },
+    input: {
+      flex: 1,
+      height: 40,
+      borderColor: darkMode ? "#666" : "#ccc",
+      borderWidth: 1,
+      marginRight: 8,
+      paddingLeft: 12,
+      borderRadius: 8,
+      color: darkMode ? "#fff" : "#333",
+    },
+    sendButton: {
+      backgroundColor: darkMode ? "#BB86FC" : "#1E90FF",
+      padding: 10,
+      borderRadius: 5,
+    },
+    sendButtonText: {
+      color: "#fff",
+      fontWeight: "bold",
+    },
+    deleteButton: {
+      position: "absolute",
+      top:25,
+      right: 10,
+      padding: 5,
+    },
+    deleteButtonText: {
+      color: darkMode ? "#BB86FC" : "#FF0000",
+      fontWeight: "bold",
+    },
+  });

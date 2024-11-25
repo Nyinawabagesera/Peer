@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet } from "react-native";
 import { collection, getDocs } from "firebase/firestore";
 import { FIREBASE_DB } from './firebase';
+import { useAuth } from "./contexts/AuthContext";
 import CustomCourseCard from './Component/CustomCourseCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const HomePage = ({ navigation }) => {
+  const { darkMode } = useAuth();
   const [courses, setCourses] = useState([]);
   const [viewAllClicked, setViewAllClicked] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,18 +36,18 @@ const HomePage = ({ navigation }) => {
 
   return (
     <ScrollView
-      style={styles.mainContainer}
+      style={[styles.mainContainer, { backgroundColor: darkMode ? "#121212" : "white" }]}
       contentContainerStyle={styles.container}
     >
       <View style={styles.topSection}></View>
-      
+
       <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Icon name="search" size={24} color="#999" style={styles.searchIcon} />
+        <View style={[styles.searchInputContainer, { borderColor: darkMode ? "#333" : "#ccc" }]}>
+          <Icon name="search" size={24} color={darkMode ? "#fff" : "#999"} style={styles.searchIcon} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: darkMode ? "#fff" : "#000" }]}
             placeholder="Search for courses..."
-            placeholderTextColor="#999"
+            placeholderTextColor={darkMode ? "#bbb" : "#999"}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -56,24 +58,25 @@ const HomePage = ({ navigation }) => {
         onPress={() => setViewAllClicked(!viewAllClicked)}
         style={styles.viewAllContainer}
       >
-        <Text style={styles.exploreText}>Explore Courses</Text>
-        <Text style={styles.viewAllText}>View All</Text>
+        <Text style={[styles.exploreText, { color: darkMode ? "#fff" : "#333" }]}>Explore Courses</Text>
+        <Text style={[styles.viewAllText, { color: darkMode ? "#bb86fc" : "#9532AA" }]}>View All</Text>
       </TouchableOpacity>
 
       {viewAllClicked ? (
         <ScrollView style={styles.courseList}>
           {filteredCourses.map((course, index) => (
-            <CustomCourseCard
-              key={index}
-              image={course.image}
-              title={course.title}
-              description={course.description}
-              email={course.email}
-              mentorImage={course.mentorImage}
-              name={course.name}
-              mentordescription={course.mentordescription}
-              navigation={navigation}
-            />
+            <View key={index} style={styles.courseContainer}>
+              <CustomCourseCard
+                image={course.image}
+                title={course.title}
+                description={course.description}
+                email={course.email}
+                mentorImage={course.mentorImage}
+                name={course.name}
+                mentordescription={course.mentordescription}
+                navigation={navigation}
+              />
+            </View>
           ))}
         </ScrollView>
       ) : (
@@ -97,14 +100,12 @@ const HomePage = ({ navigation }) => {
       )}
 
       <View style={styles.iconContainer}>
-        {/* Group Icon */}
         <TouchableOpacity onPress={() => navigation.navigate('groups')}>
-          <Icon name="group" size={100} color="#9532AA" style={styles.groupIcon} />
+          <Icon name="group" size={100} color={darkMode ? "#bb86fc" : "#9532AA"} style={styles.groupIcon} />
         </TouchableOpacity>
 
-        {/* Resources Icon */}
         <TouchableOpacity onPress={() => navigation.navigate('resources')}>
-          <Icon name="library-books" size={100} color="#9532AA" style={styles.resourceIcon} />
+          <Icon name="library-books" size={100} color={darkMode ? "#bb86fc" : "#9532AA"} style={styles.resourceIcon} />
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -114,7 +115,6 @@ const HomePage = ({ navigation }) => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "white",
     paddingVertical: 20,
   },
   container: {
@@ -130,14 +130,13 @@ const styles = StyleSheet.create({
     height: 60,
   },
   searchContainer: {
-    top: -20, // Reduced space between search bar and next section
+    top: -20,
     paddingHorizontal: 20,
-    marginBottom: 30, // Reduced marginBottom to make it closer to the icons
+    marginBottom: 30,
   },
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     height: 40,
@@ -151,9 +150,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   iconContainer: {
-    marginTop: 50, // Adjusted to position icons within the viewport
-    flexDirection: "row", // Arrange icons in a row
-    justifyContent: "space-around", // Space icons evenly
+    marginTop: 50,
+    flexDirection: "row",
+    justifyContent: "space-around",
     alignItems: 'center',
     paddingHorizontal: 20,
   },
@@ -174,16 +173,17 @@ const styles = StyleSheet.create({
   exploreText: {
     fontWeight: "bold",
     fontSize: 22,
-    color: "#333",
   },
   viewAllText: {
-    color: "#9532AA",
     fontSize: 16,
     textDecorationLine: "underline",
   },
   courseList: {
-    paddingHorizontal: 20,
-    marginBottom: 30, // Reduced marginBottom to pull the courses closer to the "View All"
+    paddingHorizontal: 50,
+    marginBottom: 30,
+  },
+  courseContainer: {
+    marginBottom: 20,
   },
   horizontalCourseList: {
     top: 30,

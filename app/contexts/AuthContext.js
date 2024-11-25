@@ -44,19 +44,16 @@ export default function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
-  // Fetch saved dark mode setting from AsyncStorage
   useEffect(() => {
     const fetchTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('darkMode');
       if (savedTheme !== null) {
-        setDarkMode(JSON.parse(savedTheme));  // Set dark mode state from AsyncStorage
+        setDarkMode(JSON.parse(savedTheme));
       }
     };
 
     fetchTheme();
   }, []);
-
-  // Save dark mode setting to AsyncStorage whenever it changes
   useEffect(() => {
     AsyncStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
@@ -64,7 +61,7 @@ export default function AuthProvider({ children }) {
   const toggleDarkMode = () => {
     setDarkMode((prevMode) => {
       const newMode = !prevMode;
-      console.log("Dark mode toggled:", newMode); // Debug the state
+      console.log("Dark mode toggled:", newMode); 
       return newMode;
     });
   };

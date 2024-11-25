@@ -8,11 +8,11 @@ const Logout = () => {
   const { logout, currentUser } = useAuth();
   const [newPicture, setNewPicture] = useState(null);
   const [cropValue, setCropValue] = useState(100);
-  const navigation = useNavigation(); // Stack Navigation Hook
+  const navigation = useNavigation(); 
 
   useEffect(() => {
     return () => {
-      setNewPicture(null); // Reset newPicture on component unmount
+      setNewPicture(null);
     };
   }, []);
 
@@ -71,7 +71,6 @@ const Logout = () => {
         {currentUser ? `Email: ${currentUser.email}` : "No user logged in"}
       </Text>
 
-      {/* Upload Profile Picture */}
       <View>
         <Text style={{ fontWeight: "bold", marginVertical: 10 }}>Upload New Profile Picture</Text>
         <TextInput type="file" accept="image/*" onChange={handlePictureChange} />
@@ -112,7 +111,6 @@ const Logout = () => {
         </View>
       )}
 
-      {/* Update Profile */}
       <TouchableOpacity
         onPress={() => navigation.navigate("UpdateProfile")}
         style={{
@@ -126,7 +124,6 @@ const Logout = () => {
         <Text style={{ color: "white", fontWeight: "bold" }}>Update Profile</Text>
       </TouchableOpacity>
 
-      {/* Logout Button */}
       <View style={{ marginTop: 20, alignItems: "center" }}>
         <TouchableOpacity
           onPress={handleLogout}

@@ -1,39 +1,52 @@
-PeerLearning Project
-Description
+# PeerLearning Project
+
+## Description
+
 The PeerLearning project is an application designed for peer learning and networking. It allows users to join various study groups, access courses, interact with mentors, and participate in discussions. The project is built using React Native and Firebase for real-time data syncing.
 
-Features
-User Authentication: Users can log in and manage their profiles.
-Group Chat: Users can join different groups and participate in group chats.
-Mentor Interaction: Users can access course information and connect with mentors.
-Real-time Messaging: Messages are updated in real-time using Firebase Firestore.
-Table of Contents
-Installation
-Usage
-Technologies
-Firebase Setup
-File Structure
-Contact
-Installation
-Prerequisites
+---
+
+## Features
+
+- **User Authentication**: Users can log in and manage their profiles.
+- **Group Chat**: Users can join different groups and participate in group chats.
+- **Mentor Interaction**: Users can access course information and connect with mentors.
+- **Real-time Messaging**: Messages are updated in real-time using Firebase Firestore.
+
+---
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Technologies](#technologies)
+- [Firebase Setup](#firebase-setup)
+- [File Structure](#file-structure)
+- [Contact](#contact)
+
+---
+
+## Installation
+
+### Prerequisites
+
 Before you begin, make sure you have the following software installed on your computer:
 
-Node.js (preferably the latest stable version)
-Yarn (if you don't have Yarn, you can install it from here)
-React Native CLI: Install React Native globally with:
-bash
-Copy code
-npm install -g react-native-cli
+- **Node.js** (preferably the latest stable version)
+- **Yarn** (if you don't have Yarn, you can install it from [here](https://classic.yarnpkg.com/en/docs/install/))
+- **React Native CLI**: Install React Native globally with:
+
+  ```bash
+  npm install -g react-native-cli
 Firebase Account: Set up a Firebase project and get your configuration details.
 Step-by-Step Setup
 Clone the Repository:
 
 Clone this repository to your local machine:
-
-bash
-Copy code
 git clone https://github.com/yourusername/peerlearning.git
 cd peerlearning
+
+
 Install Dependencies:
 
 After cloning the project, install the required dependencies:
